@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
+import javafx.stage.DirectoryChooser;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public class Controller {
     public ListView list;
     private OnTopJFileChooser chooser = new OnTopJFileChooser();
     private ObservableList<File> array;
-
+    DirectoryChooser choose = new DirectoryChooser();
     private class OnTopJFileChooser extends JFileChooser{
         protected JDialog createDialog(Component parent) throws HeadlessException {
             JDialog dialog = super.createDialog(parent);
@@ -32,20 +33,16 @@ public class Controller {
     }
 
     public void ChooseOnClick(ActionEvent actionEvent) {
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        int ref = chooser.showOpenDialog(null);
-
-
-
-        if (ref == OnTopJFileChooser.APPROVE_OPTION) {
-
-            File file = chooser.getSelectedFile();
+        //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        //chooser.setAcceptAllFileFilterUsed(false);
+        File file = choose.showDialog(Main.stage.getScene().getWindow());
+            if(file!=null){
             File[] files = file.listFiles();
             HashSet<File> arr = compareCheckSum(files);
             array = new ObservableListWrapper<File>(new ArrayList<>(arr));
             list.setItems(array);
-        }
+            }
+
     }
 
 
