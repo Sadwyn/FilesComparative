@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="RGZ_Sapkis:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/RGZ_Sapkis_jar</output-path>
+    <root id="archive" name="RGZ_Sapkis.jar">
+      <element id="module-output" name="RGZ_Sapkis" />
+    </root>
+  </artifact>
+</component>

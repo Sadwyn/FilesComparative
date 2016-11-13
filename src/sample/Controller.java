@@ -3,15 +3,14 @@ package sample;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,17 +20,25 @@ import java.util.Optional;
 
 public class Controller {
     public ListView list;
-    private JFileChooser chooser = new JFileChooser();
+    private OnTopJFileChooser chooser = new OnTopJFileChooser();
     private ObservableList<File> array;
 
-
+    private class OnTopJFileChooser extends JFileChooser{
+        protected JDialog createDialog(Component parent) throws HeadlessException {
+            JDialog dialog = super.createDialog(parent);
+            dialog.setAlwaysOnTop(true);
+            return dialog;
+        }
+    }
 
     public void ChooseOnClick(ActionEvent actionEvent) {
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         int ref = chooser.showOpenDialog(null);
 
-        if (ref == JFileChooser.APPROVE_OPTION) {
+
+
+        if (ref == OnTopJFileChooser.APPROVE_OPTION) {
 
             File file = chooser.getSelectedFile();
             File[] files = file.listFiles();
@@ -86,18 +93,18 @@ public class Controller {
 
     private HashSet<File> compareCheckSum(File[] files) {
 
-        HashSet<File> arrayList = new HashSet<>();
+        HashSet<File> set = new HashSet<>();
         for (int i = 0; i < files.length; i++) {
             for (int j = 0; j < files.length; j++) {
                 if(!(files[j].isDirectory()||files[i].isDirectory())) {
                     if (i != j && getCheckSum(files[i]).equals(getCheckSum(files[j]))) {
-                        arrayList.add(files[j]);
-                        arrayList.add(files[i]);
+                       set.add(files[j]);
+                        set.add(files[i]);
                     }
                 }
             }
         }
-        return arrayList;
+        return set;
     }
 
     private String getCheckSum(File file) {
@@ -124,9 +131,8 @@ public class Controller {
                         .substring(1));
             }
 
-        } catch (FileNotFoundException | NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException | IOException ex) {
 
-        } catch (IOException ex) {
         }
         return sb.toString();
     }
