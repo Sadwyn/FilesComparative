@@ -3,6 +3,7 @@ package sample;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
@@ -21,7 +22,8 @@ import java.util.Optional;
 public class Controller {
     public ListView list;
     private JFileChooser chooser = new JFileChooser();
-    ObservableList<File> array;
+    private ObservableList<File> array;
+
 
 
     public void ChooseOnClick(ActionEvent actionEvent) {
@@ -30,6 +32,7 @@ public class Controller {
         int ref = chooser.showOpenDialog(null);
 
         if (ref == JFileChooser.APPROVE_OPTION) {
+
             File file = chooser.getSelectedFile();
             File[] files = file.listFiles();
             HashSet<File> arr = compareCheckSum(files);
@@ -40,28 +43,45 @@ public class Controller {
 
 
     public void DeleteOnClick(ActionEvent actionEvent) {
-        File file = (File) list.getSelectionModel().getSelectedItem();
-
-        if(list.getItems().size()>1){
-            file = (File) list.getSelectionModel().getSelectedItem();
-            file.delete();
-            array.remove(file);
-            list.setItems(array);
+        if (list.getItems().size()==0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Удаление");
+            alert.setContentText("Фалы для удаления отсутствуют");
+            alert.show();
         }
-        else{
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Подтверждающее окно");
-            alert.setHeaderText("Удаление файла");
-            alert.setContentText("Вы действительно хотите удалить последний экземпляр файла?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()==ButtonType.OK){
+        else if(list.getItems().size()>0&&list.getSelectionModel().getSelectedItem()==null)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Удаление");
+            alert.setContentText("Выберите файл для удаления");
+            alert.show();
+        }
+        else
+            {
+            File file = (File) list.getSelectionModel().getSelectedItem();
 
+            if (list.getItems().size() > 1) {
+                file = (File) list.getSelectionModel().getSelectedItem();
                 file.delete();
                 array.remove(file);
-                list.setItems(array);
-            }
-        }
 
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Подтверждающее окно");
+                alert.setHeaderText("Удаление файла");
+                alert.setContentText("Вы действительно хотите удалить последний экземпляр файла?");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+
+                    file.delete();
+                    array.remove(file);
+                    list.setItems(array);
+                }
+            }
+
+        }
     }
 
     private HashSet<File> compareCheckSum(File[] files) {
